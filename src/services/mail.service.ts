@@ -1,5 +1,5 @@
 import { MailDataRequired } from '@sendgrid/mail'
-import { SENDER_MAIL } from '../utils/constants.util'
+import { SENDER_MAIL, VERIFY_EMAIL_TID } from '../utils/constants.util'
 import { UserService } from './user.service'
 import { getEnv } from '../utils/env.util'
 import sgMail from '@sendgrid/mail'
@@ -31,7 +31,7 @@ export class MailService {
 			const mailContent: MailDataRequired = {
 				from: SENDER_MAIL,
 				to: user.email,
-				templateId: 'd-0f5bf41a67064f86a53774c86c92f903',
+				templateId: VERIFY_EMAIL_TID,
 				dynamicTemplateData: {
 					name: user.profile ? user.profile.name.first : '',
 					verifyLink: userVerifyRedirectUrl,
