@@ -1,5 +1,9 @@
 import { MailDataRequired } from '@sendgrid/mail'
-import { SENDER_MAIL, VERIFY_EMAIL_TID } from '../utils/constant.util'
+import {
+	SENDER_MAIL,
+	ENV_SGMAIL_KEY,
+	VERIFY_EMAIL_TID,
+} from '../utils/constant.util'
 import { UserService } from './user.service'
 import { getEnv } from '../utils/env.util'
 import sgMail from '@sendgrid/mail'
@@ -11,7 +15,7 @@ export class MailService {
 
 	helpers = {
 		sendMail: (content: MailDataRequired | MailDataRequired[]) => {
-			const SGMAIL_KEY = getEnv('SGMAIL_KEY') as string
+			const SGMAIL_KEY = getEnv(ENV_SGMAIL_KEY) as string
 			sgMail.setApiKey(SGMAIL_KEY)
 			sgMail.send(content).catch((err) => {
 				throw new AppErrorResponse({

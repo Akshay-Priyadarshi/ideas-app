@@ -7,6 +7,7 @@ import { ErrorMiddleware } from './middlewares/error.middleware'
 import { ensureDatabaseConnection } from './utils/db.util'
 import { getEnv } from './utils/env.util'
 import { RootRouter } from './routers/root.router'
+import { ENV_PORT } from './utils/constant.util'
 
 // Configuring environment variables
 if (process.env.NODE_ENV === 'development') {
@@ -14,7 +15,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Setting PORT constant
-const PORT = parseInt(getEnv('PORT') as string) || 8080
+const PORT = parseInt(getEnv(ENV_PORT) as string) || 8080
 
 // Initializing express application
 // deepcode ignore UseCsurfForExpress: <I am not using sessions>

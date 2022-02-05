@@ -1,8 +1,8 @@
-import { UserDatabaseResponse } from '../../server/types/dtos/user.dto'
+import { UserDatabaseResponse } from '../../dtos/user.dto'
 
 declare global {
 	namespace Express {
-		export interface Request {
+		interface Request {
 			user: UserDatabaseResponse | null | undefined
 		}
 	}

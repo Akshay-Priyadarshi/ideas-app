@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
-import { JsonWebTokenError, verify } from 'jsonwebtoken'
+import { JsonWebTokenError } from 'jsonwebtoken'
 import { User } from '../database/user.model'
 import { AuthenticationError } from '../responses/error.response'
-import { getEnv } from '../utils/env.util'
+import { ENV_ACCESS_TOKEN_SECRET } from '../utils/constant.util'
+import { getPayloadFromJwt } from '../utils/jwt.util'
 
 export async function JwtMiddleware(
 	req: Request,
@@ -12,13 +13,13 @@ export async function JwtMiddleware(
 	try {
 		if (req.headers.authorization) {
 			const bearerSignedAuthToken = req.headers.authorization.split(' ')[1]
-			const jwtPayload = verify(
+			const jwtPayload = getPayloadFromJwt(
 				bearerSignedAuthToken,
-				getEnv('JWT_SECRET') as string
+				ENV_ACCESS_TOKEN_SECRET
 			)
 			const signedInUser = await User.findOne({
 				_id: jwtPayload.sub,
-			}).select(['email', 'authLevel'])
+			})
 			req.user = signedInUser
 		}
 		next()

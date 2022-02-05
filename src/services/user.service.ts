@@ -1,4 +1,3 @@
-import { verify } from 'jsonwebtoken'
 import { User } from '../database/user.model'
 import {
 	CreateUserDto,
@@ -11,7 +10,8 @@ import {
 	ClientError,
 	ClientErrorContext,
 } from '../responses/error.response'
-import { getEnv } from '../utils/env.util'
+import { ENV_VERIFY_USER_SECRET } from '../utils/constant.util'
+import { getPayloadFromJwt } from '../utils/jwt.util'
 import { verifyPassword } from '../utils/password.util'
 
 export class UserService {
@@ -192,10 +192,7 @@ export class UserService {
 		signedToken: string
 	): Promise<boolean | undefined> => {
 		let ifVerified = false
-		const jwtPayload = verify(
-			signedToken,
-			getEnv('JWT_VERIFY_USER_SECRET') as string
-		)
+		const jwtPayload = getPayloadFromJwt(signedToken, ENV_VERIFY_USER_SECRET)
 		if (jwtPayload && jwtPayload.sub) {
 			const user = await this.getUserById(jwtPayload.sub as string)
 			if (user) {

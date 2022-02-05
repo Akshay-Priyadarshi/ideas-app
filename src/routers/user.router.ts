@@ -3,7 +3,7 @@ import { body, param } from 'express-validator'
 import { UserController } from '../controllers/user.controller'
 import {
 	AuthenticationMiddleware,
-	SelfAuthorizationMiddleware,
+	SelfAndAdminAuthorizationMiddleware,
 } from '../middlewares/auth.middleware'
 
 export const UserRouter = Router()
@@ -21,9 +21,9 @@ UserRouter.get(
 UserRouter.put(
 	'/:userId',
 	param('userId').isMongoId().withMessage('user id is not valid'),
-	body('email').exists().isEmail().withMessage('email is invalid'),
+	body('email').optional().isEmail().withMessage('email is invalid'),
 	AuthenticationMiddleware(),
-	SelfAuthorizationMiddleware(),
+	SelfAndAdminAuthorizationMiddleware(),
 	userController.updateUser
 )
 
@@ -31,7 +31,7 @@ UserRouter.delete(
 	'/:userId',
 	param('userId').isMongoId().withMessage('user id is not valid'),
 	AuthenticationMiddleware(),
-	SelfAuthorizationMiddleware(),
+	SelfAndAdminAuthorizationMiddleware(),
 	userController.deleteUser
 )
 
@@ -39,7 +39,7 @@ UserRouter.put(
 	'/reset-password/:userId',
 	param('userId').isMongoId().withMessage('user id is not valid'),
 	AuthenticationMiddleware(),
-	SelfAuthorizationMiddleware(),
+	SelfAndAdminAuthorizationMiddleware(),
 	userController.resetUserPassword
 )
 

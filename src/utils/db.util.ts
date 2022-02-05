@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { ENV_DB_URL } from './constant.util'
 import { getEnv } from './env.util'
 
 /**
@@ -6,6 +7,6 @@ import { getEnv } from './env.util'
  * @author Akshay Priyadarshi <akshayp1904@outlook.com>
  */
 export async function ensureDatabaseConnection(): Promise<void> {
-	const DB_URL = getEnv('DB_URL') as string
+	const DB_URL = getEnv(ENV_DB_URL) as string
 	await mongoose.connect(DB_URL)
 }

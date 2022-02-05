@@ -2,15 +2,15 @@ import { model, Schema } from 'mongoose'
 import { encryptPassword } from '../utils/password.util'
 import { IProfile, profileSchema } from './profile.schema'
 
-export enum UserAuthLevel {
-	USER = 1,
-	ADMIN = 0,
+export enum UserRole {
+	ADMIN = 'ADMIN',
+	USER = 'USER',
 }
 
 export interface IUser {
 	email: string
 	password: string
-	authLevel: number
+	role: UserRole
 	verified: boolean
 	profile: IProfile
 }
@@ -31,11 +31,11 @@ const userSchema = new Schema<IUser>(
 			set: encryptPassword,
 			required: [true, 'password is required'],
 		},
-		authLevel: {
-			type: Number,
-			select: false,
-			enum: UserAuthLevel,
-			default: UserAuthLevel.USER,
+		role: {
+			type: String,
+			select: true,
+			enum: UserRole,
+			default: UserRole.USER,
 		},
 		verified: { type: Boolean, default: false, select: true },
 		profile: { type: profileSchema },

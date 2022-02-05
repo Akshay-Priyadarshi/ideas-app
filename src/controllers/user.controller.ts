@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { JwtPayload, sign } from 'jsonwebtoken'
 import { MailService } from '../services/mail.service'
 import { UserService } from '../services/user.service'
 import { AppResponse } from '../responses/app.response'
 import { AppErrorResponse } from '../responses/error.response'
 import { AppSuccessResponse } from '../responses/success.response'
-import { getEnv } from '../utils/env.util'
 import { getUserVerifyRedirectUrl } from '../utils/url.util'
 import { getClientErrors } from '../utils/error.util'
+import { ENV_VERIFY_USER_SECRET } from '../utils/constant.util'
+import { getSignedJwtToken } from '../utils/jwt.util'
 
 export class UserController {
 	constructor(
@@ -124,9 +124,10 @@ export class UserController {
 			if (clientErrors != null) {
 				throw clientErrors
 			}
-			const signedVerifyToken = sign(
-				{ sub: req.params.userId } as JwtPayload,
-				getEnv('JWT_VERIFY_USER_SECRET') as string
+			const payload = { sub: req.params.userId }
+			const signedVerifyToken = getSignedJwtToken(
+				payload,
+				ENV_VERIFY_USER_SECRET
 			)
 			await this.mailService.sendVerifyUserMail(
 				req.params.userId,

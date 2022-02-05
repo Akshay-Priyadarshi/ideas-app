@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from 'express'
-import { UserAuthLevel } from '../database/user.model'
+import { UserRole } from '../database/user.model'
 import {
 	AuthenticationError,
 	AuthorizationError,
 } from '../responses/error.response'
+import { USER_AUTH_LEVEL } from '../utils/constant.util'
 
 export function AuthenticationMiddleware() {
 	return function (req: Request, res: Response, next: NextFunction) {
@@ -19,10 +20,11 @@ export function AuthenticationMiddleware() {
 	}
 }
 
-export function AuthorizationMiddleware(allowedAuthLevel: UserAuthLevel) {
+export function AuthorizationMiddleware(minAllowedRole: UserRole) {
 	return function (req: Request, res: Response, next: NextFunction) {
 		if (req.user) {
-			if (req.user.authLevel <= allowedAuthLevel) {
+			const role = req.user.role
+			if (USER_AUTH_LEVEL[role] <= USER_AUTH_LEVEL[minAllowedRole]) {
 				next()
 			} else {
 				next(
@@ -35,13 +37,11 @@ export function AuthorizationMiddleware(allowedAuthLevel: UserAuthLevel) {
 	}
 }
 
-export function SelfAuthorizationMiddleware() {
+export function SelfAndAdminAuthorizationMiddleware() {
 	return function (req: Request, res: Response, next: NextFunction) {
 		if (req.user && req.params.userId) {
-			if (
-				req.user.id === req.params.userId ||
-				req.user.authLevel === UserAuthLevel.ADMIN
-			) {
+			const role = req.user.role
+			if (req.user.id === req.params.userId || role === UserRole.ADMIN) {
 				next()
 			} else {
 				next(
