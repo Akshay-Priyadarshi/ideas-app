@@ -1,3 +1,4 @@
+import { Location } from 'express-validator'
 import { StatusCodes } from 'http-status-codes'
 
 export interface IAppErrorResponse {
@@ -27,12 +28,14 @@ export class AppErrorResponse extends Error {
 
 export enum ClientErrorContext {
 	BODY = 'body',
-	PARAMS = 'params',
 	QUERY = 'query',
+	PARAMS = 'params',
+	COOKIES = 'cookies',
+	HEADERS = 'headers',
 }
 
 export interface IClientError extends IAppErrorResponse {
-	context: string
+	context: Location
 	path: string
 }
 

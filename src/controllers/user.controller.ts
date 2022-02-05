@@ -8,6 +8,7 @@ import { AppErrorResponse } from '../responses/error.response'
 import { AppSuccessResponse } from '../responses/success.response'
 import { getEnv } from '../utils/env.util'
 import { getUserVerifyRedirectUrl } from '../utils/url.util'
+import { getClientErrors } from '../utils/error.util'
 
 export class UserController {
 	constructor(
@@ -30,6 +31,10 @@ export class UserController {
 
 	getUserById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const clientErrors = getClientErrors(req)
+			if (clientErrors != null) {
+				throw clientErrors
+			}
 			const user = await this.userService.getUserById(req.params.userId)
 			const appResponse = new AppResponse({
 				reqPath: req.originalUrl,
@@ -43,6 +48,10 @@ export class UserController {
 
 	updateUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const clientErrors = getClientErrors(req)
+			if (clientErrors != null) {
+				throw clientErrors
+			}
 			const updatedUser = await this.userService.updateUser(
 				req.params.userId,
 				req.body
@@ -62,6 +71,10 @@ export class UserController {
 
 	deleteUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const clientErrors = getClientErrors(req)
+			if (clientErrors != null) {
+				throw clientErrors
+			}
 			const deletedUser = await this.userService.deleteUser(req.params.userId)
 			const appResponse = new AppResponse({
 				reqPath: req.originalUrl,
@@ -82,6 +95,10 @@ export class UserController {
 		next: NextFunction
 	) => {
 		try {
+			const clientErrors = getClientErrors(req)
+			if (clientErrors != null) {
+				throw clientErrors
+			}
 			const resetResult = await this.userService.resetUserPassword(
 				req.params.userId,
 				req.body
@@ -103,6 +120,10 @@ export class UserController {
 
 	verifyUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
+			const clientErrors = getClientErrors(req)
+			if (clientErrors != null) {
+				throw clientErrors
+			}
 			const signedVerifyToken = sign(
 				{ sub: req.params.userId } as JwtPayload,
 				getEnv('JWT_VERIFY_USER_SECRET') as string
@@ -129,6 +150,11 @@ export class UserController {
 		next: NextFunction
 	) => {
 		try {
+			const clientErrors = getClientErrors(req)
+			if (clientErrors != null) {
+				console.log(clientErrors)
+				throw clientErrors
+			}
 			const ifVerified = await this.userService.verifyUserRedirect(
 				req.params.verifyToken
 			)

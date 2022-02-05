@@ -1,5 +1,5 @@
 import { MailDataRequired } from '@sendgrid/mail'
-import { SENDER_MAIL, VERIFY_EMAIL_TID } from '../utils/constants.util'
+import { SENDER_MAIL, VERIFY_EMAIL_TID } from '../utils/constant.util'
 import { UserService } from './user.service'
 import { getEnv } from '../utils/env.util'
 import sgMail from '@sendgrid/mail'
