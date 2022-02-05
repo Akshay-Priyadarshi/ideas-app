@@ -1,4 +1,5 @@
-import { hashSync, compareSync } from 'bcrypt'
+import { hashSync, compareSync, genSaltSync } from 'bcrypt'
+import { SALT_ROUNDS } from './constant.util'
 
 /**
  * @param {string} plainTextPassword Password in plain text
@@ -21,6 +22,7 @@ export function verifyPassword(
  * @author Akshay Priyadarshi <akshayp1904@outlook.com>
  */
 export function encryptPassword(plainTextPassword: string): string {
-	const encryptedPassword = hashSync(plainTextPassword, 10)
+	const salt = genSaltSync(SALT_ROUNDS)
+	const encryptedPassword = hashSync(plainTextPassword, salt)
 	return encryptedPassword
 }

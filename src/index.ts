@@ -1,5 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import helmet from 'helmet'
+import cors from 'cors'
 import { JwtMiddleware } from './middlewares/jwt.middleware'
 import { ErrorMiddleware } from './middlewares/error.middleware'
 import { ensureDatabaseConnection } from './utils/db.util'
@@ -15,7 +17,12 @@ if (process.env.NODE_ENV === 'development') {
 const PORT = parseInt(getEnv('PORT') as string) || 8080
 
 // Initializing express application
+// deepcode ignore UseCsurfForExpress: <I am not using sessions>
 const app = express()
+
+// Applying security middlewares
+app.use(cors())
+app.use(helmet())
 
 // Applying all req middlewares
 app.use(express.json())
@@ -31,8 +38,13 @@ app.use('/api', RootRouter)
 app.use(ErrorMiddleware)
 
 // Ensure database connection and start server
-ensureDatabaseConnection().then(() => {
-	app.listen(PORT, () => {
-		console.log(`🚀 Server listening at http://localhost:${PORT}/`)
+ensureDatabaseConnection()
+	.then(() => {
+		console.log('🚀 Database connection ensured')
 	})
-})
+	.then(() => {
+		app.listen(PORT, () => {
+			console.log(`🚀 Server listening at http://localhost:${PORT}/`)
+		})
+	})
+	.catch((err) => console.error(err))

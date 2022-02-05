@@ -7,10 +7,5 @@ import { getEnv } from './env.util'
  */
 export async function ensureDatabaseConnection(): Promise<void> {
 	const DB_URL = getEnv('DB_URL') as string
-	await mongoose
-		.connect(DB_URL)
-		.then(() => {
-			console.log('🚀 Database connection ensured')
-		})
-		.catch((err) => console.error(err))
+	await mongoose.connect(DB_URL)
 }
