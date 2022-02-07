@@ -1,4 +1,5 @@
 import { User } from '../database/user.model'
+import { PaginationDto } from '../dtos/pagination.dto'
 import {
 	CreateUserDto,
 	UpdateUserDto,
@@ -17,26 +18,29 @@ import { verifyPassword } from '../utils/password.util'
 export class UserService {
 	constructor() {}
 
+	getCount = async (): Promise<number> => {
+		const count = await User.count()
+		return count
+	}
+
 	/**
 	 * Get all users
 	 * @returns {Promise<UserDatabaseResponse[]>}
 	 * @description Get all users
 	 * @author Akshay Priyadarshi <akshayp1904@outlook.com>
 	 */
-	getAllUsers = async (): Promise<UserDatabaseResponse[]> => {
-		const users = await User.find()
-		return users
-	}
-
-	/**
-	 * Get all users without profile
-	 * @returns {Promise<UserDatabaseResponse[]>}
-	 * @description Get all users without their profile
-	 * @author Akshay Priyadarshi <akshayp1904@outlook.com>
-	 */
-	getAllUsersWithoutProfile = async (): Promise<UserDatabaseResponse[]> => {
-		const users = await User.find().select({ profile: 0 })
-		return users
+	getAllUsers = async (q?: PaginationDto): Promise<UserDatabaseResponse[]> => {
+		if (q) {
+			const skip = (q.page - 1) * q.limit
+			if (skip > q.count) {
+				return []
+			}
+			const users = await User.find({}, {}, { skip: skip, limit: q.limit })
+			return users
+		} else {
+			const users = await User.find()
+			return users
+		}
 	}
 
 	/**
@@ -48,13 +52,6 @@ export class UserService {
 	 */
 	getUserById = async (id: string): Promise<UserDatabaseResponse | null> => {
 		const user = await User.findOne({ _id: id })
-		return user
-	}
-
-	getUserByIdWithoutProfile = async (
-		id: string
-	): Promise<UserDatabaseResponse | null> => {
-		const user = await User.findOne({ _id: id }).select({ profile: 0 })
 		return user
 	}
 
@@ -70,7 +67,6 @@ export class UserService {
 	): Promise<UserDatabaseResponse | null> => {
 		const user = await User.findOne({ email }).select({
 			password: 1,
-			authLevel: 1,
 		})
 		return user
 	}
@@ -78,7 +74,6 @@ export class UserService {
 	getCompleteUserById = async (id: string) => {
 		const user = await User.findOne({ _id: id }).select({
 			password: 1,
-			authLevel: 1,
 		})
 		return user
 	}
@@ -137,7 +132,7 @@ export class UserService {
 	deleteUser = async (
 		id: string
 	): Promise<UserDatabaseResponse | null | undefined> => {
-		const deletedUser = await User.findOne({ _id: id })
+		const deletedUser = await this.getUserById(id)
 		if (deletedUser) {
 			const deleteResult = await User.deleteOne({ _id: id })
 			if (deleteResult.deletedCount == 1) {
@@ -167,7 +162,7 @@ export class UserService {
 				path: 'new',
 			})
 		}
-		const user = await User.findOne({ _id: id }).select({ password: 1 })
+		const user = await this.getCompleteUserById(id)
 		if (user) {
 			if (verifyPassword(passwordResetDto.old, user.password)) {
 				const updateResult = await user.updateOne(

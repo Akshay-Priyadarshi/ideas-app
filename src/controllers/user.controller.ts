@@ -9,6 +9,7 @@ import { getUserVerifyRedirectUrl } from '../utils/url.util'
 import { getClientErrors } from '../utils/error.util'
 import { ENV_VERIFY_USER_SECRET } from '../utils/constant.util'
 import { getSignedJwtToken } from '../utils/jwt.util'
+import { getPaginationDataFromQuery } from '../utils/transform.util'
 
 export class UserController {
 	constructor(
@@ -16,9 +17,26 @@ export class UserController {
 		private mailService = new MailService()
 	) {}
 
+	getCount = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const count = await this.userService.getCount()
+			const appResponse = new AppResponse({
+				reqPath: req.originalUrl,
+				success: new AppSuccessResponse({
+					data: count,
+				}),
+			})
+			res.json(appResponse)
+		} catch (err) {
+			next(err)
+		}
+	}
+
 	getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const users = await this.userService.getAllUsersWithoutProfile()
+			const users = await this.userService.getAllUsers(
+				getPaginationDataFromQuery(req.query)
+			)
 			const appResponse = new AppResponse({
 				reqPath: req.originalUrl,
 				success: new AppSuccessResponse({ data: users }),

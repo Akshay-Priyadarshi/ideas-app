@@ -6,6 +6,7 @@ import { AppResponse } from '../responses/app.response'
 import { AppSuccessResponse } from '../responses/success.response'
 import { getEnv } from '../utils/env.util'
 import { getUserVerifyRedirectUrl } from '../utils/url.util'
+import { ENV_ACCESS_TOKEN_SECRET } from '../utils/constant.util'
 
 export class AuthController {
 	constructor(
@@ -35,7 +36,7 @@ export class AuthController {
 			if (signedupUser) {
 				const signedVerifyToken = sign(
 					{ sub: signedupUser.id } as JwtPayload,
-					getEnv('JWT_VERIFY_USER_SECRET') as string
+					getEnv(ENV_ACCESS_TOKEN_SECRET) as string
 				)
 				await this.mailService.sendVerifyUserMail(
 					signedupUser.id,

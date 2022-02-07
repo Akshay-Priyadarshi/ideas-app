@@ -38,7 +38,7 @@ const userSchema = new Schema<IUser>(
 			default: UserRole.USER,
 		},
 		verified: { type: Boolean, default: false, select: true },
-		profile: { type: profileSchema },
+		profile: { type: profileSchema, select: true },
 	},
 	{ timestamps: true }
 )
