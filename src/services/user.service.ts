@@ -32,7 +32,7 @@ export class UserService {
 	/**
 	 * @name getAllUsers
 	 * @param {PaginationDto | undefined}  Pagination data
-	 * @returns {Promise<UserDatabaseResponse[]>}
+	 * @returns {Promise<UserDatabaseResponse[]>} All users
 	 * @description Get all users from the user collection
 	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi/>
 	 */

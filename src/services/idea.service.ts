@@ -10,11 +10,24 @@ import { PaginationDto } from '../dtos/pagination.dto'
 export class IdeaService {
 	constructor() {}
 
+	/**
+	 * @name getIdeaCount
+	 * @returns {Promise<number>} Idea count
+	 * @description Returns count of ideas in Idea collection
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi>
+	 */
 	getIdeaCount = async (): Promise<number> => {
 		const ideaCount = await Idea.count()
 		return ideaCount
 	}
 
+	/**
+	 * @name getAllIdeas
+	 * @param {PaginationDto | undefined} p  Pagination data
+	 * @returns {Promise<IdeaDatabaseResponse[]>} All ideas
+	 * @description Returns all ideas from Idea collection
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi>
+	 */
 	getAllIdeas = async (p?: PaginationDto): Promise<IdeaDatabaseResponse[]> => {
 		if (p) {
 			const skip = (p.page - 1) * p.limit
@@ -26,6 +39,13 @@ export class IdeaService {
 		return await Idea.find()
 	}
 
+	/**
+	 * @name getIdeaById
+	 * @param {string} id Idea id
+	 * @param {boolean} complete Complete or not
+	 * @returns {Promise<IdeaDatabaseResponse | null>} Returns Idea corresponding to the provided id
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi>
+	 */
 	getIdeaById = async (
 		id: string,
 		complete?: boolean
@@ -41,6 +61,13 @@ export class IdeaService {
 		return idea
 	}
 
+	/**
+	 * @name createdIdea
+	 * @param {CreateIdeaDto} createIdeaDto Object for creating idea
+	 * @returns {Promise<IdeaDatabaseResponse} Created idea
+	 * @description Returns created idea from the provided object
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi>
+	 */
 	createIdea = async (
 		createIdeaDto: CreateIdeaDto
 	): Promise<IdeaDatabaseResponse> => {
@@ -49,6 +76,14 @@ export class IdeaService {
 		return savedIdea
 	}
 
+	/**
+	 * @name updateIdea
+	 * @param {string} id Idea id
+	 * @param {UpdateIdeaDto} updateIdeaDto Object for updating idea
+	 * @returns {Promise<IdeaDatabaseResponse | null | undefined>} Updated idea
+	 * @description Returns updated idea from provided id and object
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi>
+	 */
 	updateIdea = async (
 		id: string,
 		updateIdeaDto: UpdateIdeaDto
@@ -59,6 +94,13 @@ export class IdeaService {
 		}
 	}
 
+	/**
+	 * @name deleteIdea
+	 * @param {string} id Idea id
+	 * @returns {Promise<IdeaDatabaseResponse | null | undefined>} Deleted idea
+	 * @description Returns deleted idea from provided id
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi>
+	 */
 	deleteIdea = async (
 		id: string
 	): Promise<IdeaDatabaseResponse | null | undefined> => {
