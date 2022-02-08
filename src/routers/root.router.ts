@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { AuthRouter } from './auth.router'
+import { IdeaRouter } from './idea.router'
 import { UserRouter } from './user.router'
 
 export const RootRouter = Router()
@@ -9,6 +10,8 @@ RootRouter.get('/', (req, res) => {
 })
 
 RootRouter.use('/users', UserRouter)
+
+RootRouter.use('/ideas', IdeaRouter)
 
 RootRouter.use('/auth', AuthRouter)
 
