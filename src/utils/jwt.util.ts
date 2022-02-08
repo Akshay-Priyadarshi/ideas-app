@@ -1,6 +1,14 @@
 import { JwtPayload, sign, verify } from 'jsonwebtoken'
 import { getEnv } from './env.util'
 
+/**
+ * @name getSignedJwtToken
+ * @param {JwtPayload} payload Jwt Payload
+ * @param {string} secretKey Secret key
+ * @returns {string} Signed Token
+ * @description Return signed token from JWT payload & JWT secret key
+ * @author Akshay Priyadarshi <akshayp1904@outlook.com>
+ */
 export function getSignedJwtToken(
 	payload: JwtPayload,
 	secretKey: string
@@ -10,7 +18,14 @@ export function getSignedJwtToken(
 	return signedJwtToken
 }
 
-export function getPayloadFromJwt<T>(
+/**
+ * @name getPayloadFromJwt
+ * @param {string} signedToken Signed JWT token
+ * @param {string} secretKey Secret key
+ * @returns {string | Payload} JWT payload
+ * @description Return JWT payload from JWT signed token & JWT secret key
+ */
+export function getPayloadFromJwt(
 	signedToken: string,
 	secretKey: string
 ): string | JwtPayload {

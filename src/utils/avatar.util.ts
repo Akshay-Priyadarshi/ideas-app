@@ -1,7 +1,8 @@
 /**
- * @returns {string} Random avatar Url
- * @description Returs url of random avatars from <https://robohash.org/>
- * @author Akshay Priyadarshi <akshayp1904@outlook.com>
+ * @name getRandomAvatarUrl
+ * @returns {string} Random avatar URL
+ * @description Returs URL of random avatars from <https://robohash.org/>
+ * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi>
  */
 export function getRandomAvatarUrl() {
 	const randomNumber = Math.floor(Math.random() * 1000000 + 1)
