@@ -26,3 +26,6 @@ export const ENV_SGMAIL_KEY = 'SGMAIL_KEY'
 // DB MODELS
 export const USER_MODEL_NAME = 'User'
 export const IDEA_MODEL_NAME = 'Idea'
+export const UPVOTE_MODEL_NAME = 'Upvote'
+export const DOWNVOTE_MODEL_NAME = 'Downvote'
+export const COMMENT_MODEL_NAME = 'Comment'

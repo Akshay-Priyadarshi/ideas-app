@@ -15,3 +15,5 @@ IdeaRouter.post('/', ideaController.createIdea)
 IdeaRouter.put('/:ideaId', ideaController.updateIdea)
 
 IdeaRouter.delete('/:ideaId', ideaController.deleteIdea)
+
+IdeaRouter.post('/downvote', ideaController.downvoteIdea)

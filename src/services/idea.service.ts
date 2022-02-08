@@ -1,5 +1,8 @@
+import { ClientSession } from 'mongoose'
+import { Downvote } from '../database/downvote.model'
 import { Idea } from '../database/idea.model'
 import { IUser } from '../database/user.model'
+import { CreateDownvoteDto } from '../dtos/downvote.dto'
 import {
 	CreateIdeaDto,
 	IdeaDatabaseResponse,
@@ -111,5 +114,35 @@ export class IdeaService {
 				return toBeDeleted
 			}
 		}
+	}
+
+	downvoteIdea = async (
+		createDownvoteDto: CreateDownvoteDto
+	): Promise<boolean> => {
+		const createdDownvote = await Downvote.create(createDownvoteDto)
+		let downvoted = false
+		await Downvote.db
+			.transaction(async (session: ClientSession) => {
+				const idea = await this.getIdeaById(createDownvoteDto.idea.toString())
+				// const similarUpvote = await this.upvoteService.getUpvoteByIdeaAndUser(
+				// 	createDownvoteDto.idea.toString(),
+				// 	createDownvoteDto.downvoter.toString()
+				// )
+				// if (similarUpvote != null) {
+				// 	similarUpvote.deleteOne({ session })
+				// }
+				if (idea) {
+					idea.downvote()
+					createdDownvote.save({ session })
+					idea.save({ session })
+				}
+			})
+			.then(() => {
+				downvoted = true
+			})
+			.catch(() => {
+				downvoted = false
+			})
+		return downvoted
 	}
 }
