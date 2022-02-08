@@ -18,24 +18,31 @@ import { verifyPassword } from '../utils/password.util'
 export class UserService {
 	constructor() {}
 
-	getCount = async (): Promise<number> => {
+	/**
+	 * @name getUserCount
+	 * @returns {Promise<number>} Number of users
+	 * @description Returns the number of users in the User collection
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi/>
+	 */
+	getUserCount = async (): Promise<number> => {
 		const count = await User.count()
 		return count
 	}
 
 	/**
-	 * Get all users
+	 * @name getAllUsers
+	 * @param {PaginationDto | undefined}  Pagination data
 	 * @returns {Promise<UserDatabaseResponse[]>}
-	 * @description Get all users
-	 * @author Akshay Priyadarshi <akshayp1904@outlook.com>
+	 * @description Get all users from the user collection
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi/>
 	 */
-	getAllUsers = async (q?: PaginationDto): Promise<UserDatabaseResponse[]> => {
-		if (q) {
-			const skip = (q.page - 1) * q.limit
-			if (skip > q.count) {
+	getAllUsers = async (p?: PaginationDto): Promise<UserDatabaseResponse[]> => {
+		if (p) {
+			const skip = (p.page - 1) * p.limit
+			if (skip > p.count) {
 				return []
 			}
-			const users = await User.find({}, {}, { skip: skip, limit: q.limit })
+			const users = await User.find({}, {}, { skip: skip, limit: p.limit })
 			return users
 		} else {
 			const users = await User.find()
@@ -44,11 +51,11 @@ export class UserService {
 	}
 
 	/**
-	 * Get user by id
+	 * @name getUserById
 	 * @param {string} id User id
 	 * @returns {Promise<UserDatabaseResponse | null>} User
 	 * @description Get user with specified id
-	 * @author Akshay Priyadarshi <akshayp1904@outlook.com>
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi/>
 	 */
 	getUserById = async (id: string): Promise<UserDatabaseResponse | null> => {
 		const user = await User.findOne({ _id: id })
@@ -56,11 +63,11 @@ export class UserService {
 	}
 
 	/**
-	 * Get user credentials by email
+	 * @name getCompleteUserByEmail
 	 * @param {string} email Email of the user
 	 * @returns {Promise<UserDatabaseResponse> | null>} Login credentials of the user
 	 * @description Fetches the user corresponding to an email
-	 * @author Akshay Priyadarshi <akshayp1904@outlook.com>
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi/>
 	 */
 	getCompleteUserByEmail = async (
 		email: string
@@ -71,7 +78,16 @@ export class UserService {
 		return user
 	}
 
-	getCompleteUserById = async (id: string) => {
+	/**
+	 * @name getCompleteUserById
+	 * @param {string} id
+	 * @returns {Promise<UserDatabaseResponse | null>}
+	 * @description Returns complete user corresponding to the id
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi/>
+	 */
+	getCompleteUserById = async (
+		id: string
+	): Promise<UserDatabaseResponse | null> => {
 		const user = await User.findOne({ _id: id }).select({
 			password: 1,
 		})
@@ -79,11 +95,11 @@ export class UserService {
 	}
 
 	/**
-	 * Create User
+	 * @name createUser
 	 * @param {CreateUserDto} createUserDto Object for creating user
-	 * @returns {Promise<UserDatabaseResponse | null | undefined} Create user
+	 * @returns {Promise<UserDatabaseResponse | null | undefined} Created user
 	 * @description Create a user with specified user object
-	 * @author Akshay Priyadarshi <akshayp1904@outlook.com>
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi/>
 	 */
 	createUser = async (
 		createUserDto: CreateUserDto
@@ -102,12 +118,12 @@ export class UserService {
 	}
 
 	/**
-	 * Update user
+	 * @name updatedUser
 	 * @param {string} id Id of the user to be updated
 	 * @param {UpdateUserDto} updateUserDto User fields to be updated
 	 * @returns {Promise<UserDatabaseResponse | null | undefined>} Updated user
 	 * @description Updates user with the given user id and returns updated user
-	 * @author Akshay Priyadarshi <akshayp1904@outlook.com>
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi/>
 	 */
 	updateUser = async (
 		id: string,
@@ -123,11 +139,11 @@ export class UserService {
 	}
 
 	/**
-	 * Delete User
+	 * @name deletedUser
 	 * @param {string} id User Id
 	 * @returns {Promise<UserDatabaseResponse | null | undefined>} Deleted user
 	 * @description Deletes the user corresponding to the user id
-	 * @author Akshay Priyadarshi <akshayp1904@outlook.com>
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi/>
 	 */
 	deleteUser = async (
 		id: string
@@ -144,12 +160,12 @@ export class UserService {
 	}
 
 	/**
-	 * Reset User Password
+	 * @name resetUserPassword
 	 * @param id User id
 	 * @param passwordResetDto Combination of old and new password
 	 * @returns {Promise<boolean | undefined>} True if password reset is successful and false otherwise
 	 * @description Resets password of user with the specified user id, compares the old password, resets the password to the new value and returns true if successfully reset otherwise false
-	 * @author Akshay priyadarshi <akshayp1904@outlook.com>
+	 * @author Akshay priyadarshi <https://github.com/Akshay-Priyadarshi/>
 	 */
 	resetUserPassword = async (
 		id: string,
@@ -183,6 +199,13 @@ export class UserService {
 		return false
 	}
 
+	/**
+	 * @name verifyUserRedirect
+	 * @param {string} signedToken Signed JWT token
+	 * @returns {Promise<boolean | undefined>} If the verifu user redirect worked
+	 * @description Returns whether the user is verified or not based on the signed token passed
+	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi/>
+	 */
 	verifyUserRedirect = async (
 		signedToken: string
 	): Promise<boolean | undefined> => {

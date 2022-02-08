@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose'
+import { Model, model, Schema } from 'mongoose'
 import { USER_MODEL_NAME } from '../utils/constant.util'
 import { encryptPassword } from '../utils/password.util'
 import { IProfile, profileSchema } from './profile.schema'
@@ -15,6 +15,10 @@ export interface IUser {
 	verified: boolean
 	profile: IProfile
 }
+
+export interface UserQueryHelpers {}
+
+export interface IUserModel extends Model<IUser, UserQueryHelpers> {}
 
 const userSchema = new Schema<IUser>(
 	{
@@ -44,4 +48,4 @@ const userSchema = new Schema<IUser>(
 	{ timestamps: true }
 )
 
-export const User = model<IUser>(USER_MODEL_NAME, userSchema)
+export const User = model<IUser, IUserModel>(USER_MODEL_NAME, userSchema)

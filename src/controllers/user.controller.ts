@@ -17,9 +17,9 @@ export class UserController {
 		private mailService = new MailService()
 	) {}
 
-	getCount = async (req: Request, res: Response, next: NextFunction) => {
+	getUserCount = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const count = await this.userService.getCount()
+			const count = await this.userService.getUserCount()
 			const appResponse = new AppResponse({
 				reqPath: req.originalUrl,
 				success: new AppSuccessResponse({

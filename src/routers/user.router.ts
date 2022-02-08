@@ -10,7 +10,7 @@ export const UserRouter = Router()
 
 const userController = new UserController()
 
-UserRouter.get('/count', userController.getCount)
+UserRouter.get('/count', userController.getUserCount)
 
 UserRouter.get('/', userController.getAllUsers)
 

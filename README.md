@@ -59,9 +59,9 @@
 ### Authors
 
 1. [Akshay Priyadarshi](https://github.com/Akshay-Priyadarshi/)
-2. [Ashis Kumar]()
+2. [Ashis Kumar](https://github.com/ashiskumar-1999)
 3. [Abhishek Mohapatra]()
 
 ### In guidance of
 
-[Mr. Tarini Charana Mishra]()
+[Mr. Tarini Charana Mishra](https://silicon.ac.in/bbsr-home/know-your-faculty/)
