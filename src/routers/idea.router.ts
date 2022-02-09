@@ -1,12 +1,13 @@
 import { Router } from 'express'
 import { IdeaController } from '../controllers/idea.controller'
+import { AuthenticationMiddleware } from '../middlewares/auth.middleware'
 
 export const IdeaRouter = Router()
 const ideaController = new IdeaController()
 
 IdeaRouter.get('/count', ideaController.getIdeaCount)
 
-IdeaRouter.get('/', ideaController.getAllIdeas)
+IdeaRouter.get('/', AuthenticationMiddleware(), ideaController.getAllIdeas)
 
 IdeaRouter.get('/:ideaId', ideaController.getIdeaById)
 

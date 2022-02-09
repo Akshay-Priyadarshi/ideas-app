@@ -12,6 +12,7 @@ import mongoose, { ClientSession } from 'mongoose'
 import { PaginationDto } from '../dtos/pagination.dto'
 import { Upvote } from '../database/upvote.model'
 import { AppErrorResponse } from '../responses/error.response'
+import { UserDatabaseResponse } from '../dtos/user.dto'
 
 export class IdeaService {
 	constructor() {}
@@ -34,16 +35,60 @@ export class IdeaService {
 	 * @description Returns all ideas from Idea collection
 	 * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi>
 	 */
-	getAllIdeas = async (p?: PaginationDto): Promise<IdeaDatabaseResponse[]> => {
+	getAllIdeas = async (
+		loggedInUser: UserDatabaseResponse,
+		p?: PaginationDto
+	): Promise<IdeaDatabaseResponse[]> => {
+		const upvotedIdeasId = await Upvote.find({
+			upvoter: loggedInUser._id,
+		}).transform((docs) => {
+			const ids = docs.map((doc) => {
+				return doc.idea
+			})
+			return ids
+		})
+		const downvotedIdeasId = await Downvote.find({
+			downvoter: loggedInUser._id,
+		}).transform((docs) => {
+			const ids = docs.map((doc) => {
+				return doc.idea
+			})
+			return ids
+		})
+		const addFieldIfIUpvoted = {
+			$addFields: {
+				ifIUpvoted: {
+					$in: ['$_id', upvotedIdeasId],
+				},
+			},
+		}
+		const addFieldIfIDownvoted = {
+			$addFields: {
+				ifIDownvoted: {
+					$in: ['$_id', downvotedIdeasId],
+				},
+			},
+		}
 		if (p) {
 			const skip = (p.page - 1) * p.limit
 			if (skip > p.count) {
 				return []
 			}
 
-			return await Idea.find({}, {}, { skip, limit: p.limit })
+			const ideas = await Idea.aggregate([
+				{ $skip: skip },
+				{ $limit: p.limit },
+				addFieldIfIUpvoted,
+				addFieldIfIDownvoted,
+			])
+			return ideas
+		} else {
+			const ideas = await Idea.aggregate([
+				addFieldIfIUpvoted,
+				addFieldIfIDownvoted,
+			])
+			return ideas
 		}
-		return await Idea.find()
 	}
 
 	/**

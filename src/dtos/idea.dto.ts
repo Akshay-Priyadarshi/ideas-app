@@ -5,4 +5,7 @@ export type CreateIdeaDto = IIdea
 
 export type UpdateIdeaDto = Partial<CreateIdeaDto>
 
-export interface IdeaDatabaseResponse extends IIdea, Document {}
+export interface IdeaDatabaseResponse extends IIdea, Document {
+	ifIUpvoted?: boolean
+	ifIDownvoted?: boolean
+}

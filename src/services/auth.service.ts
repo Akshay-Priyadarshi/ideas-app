@@ -1,8 +1,8 @@
-import { sign } from 'jsonwebtoken'
 import { ILoginCredentialsDto, ILoginResponseDto } from '../dtos/auth.dto'
 import { CreateUserDto, UserDatabaseResponse } from '../dtos/user.dto'
 import { AuthenticationError } from '../responses/error.response'
 import { ENV_ACCESS_TOKEN_SECRET } from '../utils/constant.util'
+import { getSignedJwtToken } from '../utils/jwt.util'
 import { verifyPassword } from '../utils/password.util'
 import { UserService } from './user.service'
 
@@ -26,7 +26,10 @@ export class AuthService {
 		if (user) {
 			if (verifyPassword(loginCredentials.password, user.password)) {
 				const payload = { sub: user.id }
-				const signedAuthToken = sign(payload, ENV_ACCESS_TOKEN_SECRET)
+				const signedAuthToken = getSignedJwtToken(
+					payload,
+					ENV_ACCESS_TOKEN_SECRET
+				)
 				const signedBearerAuthToken = `Bearer ${signedAuthToken}`
 				const loginResponse: ILoginResponseDto = {
 					token: signedBearerAuthToken,

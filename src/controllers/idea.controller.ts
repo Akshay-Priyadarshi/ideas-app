@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
+import { UserDatabaseResponse } from '../dtos/user.dto'
 import { AppResponse } from '../responses/app.response'
 import { AppErrorResponse } from '../responses/error.response'
 import { AppSuccessResponse } from '../responses/success.response'
@@ -26,7 +27,10 @@ export class IdeaController {
 	getAllIdeas = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const paginationData = getPaginationDataFromQuery(req.query)
-			const ideas = await this.ideaService.getAllIdeas(paginationData)
+			const ideas = await this.ideaService.getAllIdeas(
+				req.user as UserDatabaseResponse,
+				paginationData
+			)
 			const appResponse = new AppResponse({
 				reqPath: req.originalUrl,
 				success: new AppSuccessResponse({
