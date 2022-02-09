@@ -1,6 +1,9 @@
 import { Document } from 'mongoose'
 import { IDownvote } from '../database/downvote.model'
 
-export type CreateDownvoteDto = IDownvote
+export interface CreateDownvoteDto {
+	userId: string
+	ideaId: string
+}
 
 export interface DownvoteDatabaseResponse extends IDownvote, Document {}

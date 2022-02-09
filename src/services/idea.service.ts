@@ -1,14 +1,17 @@
-import { ClientSession } from 'mongoose'
 import { Downvote } from '../database/downvote.model'
 import { Idea } from '../database/idea.model'
 import { IUser } from '../database/user.model'
 import { CreateDownvoteDto } from '../dtos/downvote.dto'
+import { CreateUpvoteDto } from '../dtos/upvote.dto'
 import {
 	CreateIdeaDto,
 	IdeaDatabaseResponse,
 	UpdateIdeaDto,
 } from '../dtos/idea.dto'
+import mongoose, { ClientSession } from 'mongoose'
 import { PaginationDto } from '../dtos/pagination.dto'
+import { Upvote } from '../database/upvote.model'
+import { AppErrorResponse } from '../responses/error.response'
 
 export class IdeaService {
 	constructor() {}
@@ -37,6 +40,7 @@ export class IdeaService {
 			if (skip > p.count) {
 				return []
 			}
+
 			return await Idea.find({}, {}, { skip, limit: p.limit })
 		}
 		return await Idea.find()
@@ -119,30 +123,79 @@ export class IdeaService {
 	downvoteIdea = async (
 		createDownvoteDto: CreateDownvoteDto
 	): Promise<boolean> => {
-		const createdDownvote = await Downvote.create(createDownvoteDto)
+		const createdDownvote = new Downvote({
+			idea: createDownvoteDto.ideaId,
+			downvoter: createDownvoteDto.userId,
+		})
 		let downvoted = false
-		await Downvote.db
-			.transaction(async (session: ClientSession) => {
-				const idea = await this.getIdeaById(createDownvoteDto.idea.toString())
-				// const similarUpvote = await this.upvoteService.getUpvoteByIdeaAndUser(
-				// 	createDownvoteDto.idea.toString(),
-				// 	createDownvoteDto.downvoter.toString()
-				// )
-				// if (similarUpvote != null) {
-				// 	similarUpvote.deleteOne({ session })
-				// }
-				if (idea) {
-					idea.downvote()
-					createdDownvote.save({ session })
-					idea.save({ session })
-				}
-			})
-			.then(() => {
-				downvoted = true
-			})
-			.catch(() => {
-				downvoted = false
-			})
+		const idea = await this.getIdeaById(createDownvoteDto.ideaId)
+		const similarUpvote = await Upvote.findOne({
+			idea: createDownvoteDto.ideaId,
+			upvoter: createDownvoteDto.userId,
+		})
+		const similarDownvote = await Downvote.findOne({
+			idea: createDownvoteDto.ideaId,
+			downvoter: createDownvoteDto.userId,
+		})
+
+		if (idea) {
+			await mongoose.connection
+				.transaction(async (session) => {
+					if (similarDownvote !== null) {
+						throw new AppErrorResponse({
+							message: `already downvoted`,
+						})
+					}
+					if (similarUpvote !== null) {
+						await similarUpvote.deleteOne({ session })
+						idea.upvotes = idea.upvotes - 1
+					}
+					idea.downvotes = idea.downvotes + 1
+					await idea.save({ session })
+					await createdDownvote.save({ session })
+				})
+				.then(() => {
+					downvoted = true
+				})
+		}
 		return downvoted
+	}
+
+	upvoteIdea = async (createUpvoteDto: CreateUpvoteDto): Promise<boolean> => {
+		const createdUpvote = new Upvote({
+			idea: createUpvoteDto.ideaId,
+			upvoter: createUpvoteDto.userId,
+		})
+		let upvoted = false
+		const idea = await this.getIdeaById(createUpvoteDto.ideaId)
+		const similarUpvote = await Upvote.findOne({
+			idea: createUpvoteDto.ideaId,
+			upvoter: createUpvoteDto.userId,
+		})
+		const similarDownvote = await Downvote.findOne({
+			idea: createUpvoteDto.ideaId,
+			downvoter: createUpvoteDto.userId,
+		})
+		if (idea) {
+			await mongoose.connection
+				.transaction(async (session: ClientSession) => {
+					if (similarUpvote !== null) {
+						throw new AppErrorResponse({
+							message: `already upvoted`,
+						})
+					}
+					if (similarDownvote !== null) {
+						await similarDownvote.deleteOne({ session })
+						idea.downvotes = idea.downvotes - 1
+					}
+					idea.upvotes = idea.upvotes + 1
+					await idea.save({ session })
+					await createdUpvote.save({ session })
+				})
+				.then(() => {
+					upvoted = true
+				})
+		}
+		return upvoted
 	}
 }

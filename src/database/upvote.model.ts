@@ -28,4 +28,6 @@ const upvoteSchema = new Schema<IUpvote>(
 	{ timestamps: true }
 )
 
+upvoteSchema.index({ idea: 1, upvoter: 1 }, { name: 'idea-upvoter' })
+
 export const Upvote = model(UPVOTE_MODEL_NAME, upvoteSchema)

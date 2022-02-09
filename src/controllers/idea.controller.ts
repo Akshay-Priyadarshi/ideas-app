@@ -124,4 +124,24 @@ export class IdeaController {
 			next(err)
 		}
 	}
+
+	upvoteIdea = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const upvoted = await this.ideaService.upvoteIdea(req.body)
+			if (upvoted === false) {
+				throw new AppErrorResponse({
+					message: `couldn't upvote`,
+				})
+			}
+			const appResponse = new AppResponse({
+				reqPath: req.originalUrl,
+				success: new AppSuccessResponse({
+					message: `successfullly upvoted`,
+				}),
+			})
+			res.json(appResponse)
+		} catch (err) {
+			next(err)
+		}
+	}
 }

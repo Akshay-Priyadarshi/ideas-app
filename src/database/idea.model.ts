@@ -8,8 +8,6 @@ export interface IIdea {
 	upvotes: number
 	downvotes: number
 	ideator: Schema.Types.ObjectId
-	upvote: () => void
-	downvote: () => void
 }
 
 const ideaSchema = new Schema<IIdea>(
@@ -40,12 +38,5 @@ const ideaSchema = new Schema<IIdea>(
 	},
 	{ timestamps: true }
 )
-
-ideaSchema.method('upvote', function (this: IIdea) {
-	this.upvotes += 1
-})
-ideaSchema.method('downvote', function (this: IIdea) {
-	this.downvotes += 1
-})
 
 export const Idea = model(IDEA_MODEL_NAME, ideaSchema)

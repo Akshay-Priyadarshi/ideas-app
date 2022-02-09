@@ -28,4 +28,6 @@ const downvoteSchema = new Schema<IDownvote>(
 	{ timestamps: true }
 )
 
+downvoteSchema.index({ idea: 1, downvoter: 1 }, { name: 'idea-downvoter' })
+
 export const Downvote = model(DOWNVOTE_MODEL_NAME, downvoteSchema)
