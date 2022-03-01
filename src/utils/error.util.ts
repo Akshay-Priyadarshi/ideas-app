@@ -13,12 +13,12 @@ import { ClientError, ClientErrorContext } from '../responses/error.response'
  * @description Returns client errors from the express request
  * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi>
  */
-export const getClientErrors = (req: Request): ClientError[] | null => {
+export const getClientErrors = (req: Request): ClientError[] => {
 	const result = validationResult(req).formatWith(clientErrorFormatter)
-	if (result.array().length > 0) {
-		return result.array()
+	if (result.isEmpty()) {
+		return []
 	}
-	return null
+	return result.array()
 }
 
 /**

@@ -1,9 +1,9 @@
 import { Document } from 'mongoose'
 import { IUser } from '../database/user.model'
 
-export type CreateUserDto = Omit<IUser, 'role'>
+export type CreateUserDto = Pick<IUser, 'email' | 'password'>
 
-export type UpdateUserDto = Partial<CreateUserDto>
+export type UpdateUserDto = Partial<IUser>
 
 export interface UserDatabaseResponse extends IUser, Document {}
 
