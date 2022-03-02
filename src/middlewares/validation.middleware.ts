@@ -3,10 +3,6 @@ import { MatchedDataOptions, ValidationChain } from 'express-validator'
 import { getClientErrors } from '../utils/error.util'
 import { sanitisedData } from '../utils/validator.util'
 
-export function ValidationApplyMiddleware(requestVS: ValidationChain[]) {
-	return requestVS
-}
-
 export function ValidationResultMiddleware(
 	sanitiseOptions: Partial<MatchedDataOptions> = { onlyValidData: true }
 ) {
@@ -23,4 +19,8 @@ export function ValidationResultMiddleware(
 			next(err)
 		}
 	}
+}
+
+export function ValidationMiddleware(validationMiddlewares: ValidationChain[]) {
+	return [...validationMiddlewares, ValidationResultMiddleware()]
 }

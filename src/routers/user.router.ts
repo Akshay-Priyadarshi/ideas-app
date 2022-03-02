@@ -1,10 +1,12 @@
 import { Router } from 'express'
-import { body, param } from 'express-validator'
+import { param } from 'express-validator'
 import { UserController } from '../controllers/user.controller'
 import {
 	AuthenticationMiddleware,
 	SelfAndAdminAuthorizationMiddleware,
 } from '../middlewares/auth.middleware'
+import { ValidationMiddleware } from '../middlewares/validation.middleware'
+import { userGetByIdVS } from '../validation/user.validation'
 
 export const UserRouter = Router()
 
@@ -16,14 +18,13 @@ UserRouter.get('/', userController.getAllUsers)
 
 UserRouter.get(
 	'/:userId',
-	param('userId').isMongoId().withMessage('user id is not valid'),
+	ValidationMiddleware(userGetByIdVS),
 	userController.getUserById
 )
 
 UserRouter.put(
 	'/:userId',
-	param('userId').isMongoId().withMessage('user id is not valid'),
-	body('email').optional().isEmail().withMessage('email is invalid'),
+
 	AuthenticationMiddleware(),
 	SelfAndAdminAuthorizationMiddleware(),
 	userController.updateUser
