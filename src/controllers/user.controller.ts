@@ -6,7 +6,6 @@ import { AppResponse } from '../responses/app.response'
 import { AppErrorResponse } from '../responses/error.response'
 import { AppSuccessResponse } from '../responses/success.response'
 import { getUserVerifyRedirectUrl } from '../utils/url.util'
-import { getClientErrors } from '../utils/error.util'
 import { ENV_VERIFY_USER_SECRET } from '../utils/constant.util'
 import { getSignedJwtToken } from '../utils/jwt.util'
 import { getPaginationDataFromQuery } from '../utils/transform.util'
@@ -49,10 +48,6 @@ export class UserController {
 
 	getUserById = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const clientErrors = getClientErrors(req)
-			if (clientErrors != null) {
-				throw clientErrors
-			}
 			const user = await this.userService.getUserById(req.params.userId)
 			const appResponse = new AppResponse({
 				reqPath: req.originalUrl,
@@ -66,10 +61,6 @@ export class UserController {
 
 	updateUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const clientErrors = getClientErrors(req)
-			if (clientErrors != null) {
-				throw clientErrors
-			}
 			const updatedUser = await this.userService.updateUser(
 				req.params.userId,
 				req.body
@@ -89,10 +80,6 @@ export class UserController {
 
 	deleteUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const clientErrors = getClientErrors(req)
-			if (clientErrors != null) {
-				throw clientErrors
-			}
 			const deletedUser = await this.userService.deleteUser(req.params.userId)
 			const appResponse = new AppResponse({
 				reqPath: req.originalUrl,
@@ -113,10 +100,6 @@ export class UserController {
 		next: NextFunction
 	) => {
 		try {
-			const clientErrors = getClientErrors(req)
-			if (clientErrors != null) {
-				throw clientErrors
-			}
 			const resetResult = await this.userService.resetUserPassword(
 				req.params.userId,
 				req.body
@@ -138,10 +121,6 @@ export class UserController {
 
 	verifyUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const clientErrors = getClientErrors(req)
-			if (clientErrors != null) {
-				throw clientErrors
-			}
 			const payload = { sub: req.params.userId }
 			const signedVerifyToken = getSignedJwtToken(
 				payload,
@@ -169,11 +148,6 @@ export class UserController {
 		next: NextFunction
 	) => {
 		try {
-			const clientErrors = getClientErrors(req)
-			if (clientErrors != null) {
-				console.log(clientErrors)
-				throw clientErrors
-			}
 			const ifVerified = await this.userService.verifyUserRedirect(
 				req.params.verifyToken
 			)

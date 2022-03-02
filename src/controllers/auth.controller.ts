@@ -1,12 +1,11 @@
 import { NextFunction, Request, Response } from 'express'
-import { JwtPayload, sign } from 'jsonwebtoken'
 import { AuthService } from '../services/auth.service'
 import { MailService } from '../services/mail.service'
 import { AppResponse } from '../responses/app.response'
 import { AppSuccessResponse } from '../responses/success.response'
-import { getEnv } from '../utils/env.util'
 import { getUserVerifyRedirectUrl } from '../utils/url.util'
-import { ENV_ACCESS_TOKEN_SECRET } from '../utils/constant.util'
+import { ENV_VERIFY_USER_SECRET } from '../utils/constant.util'
+import { getSignedJwtToken } from '../utils/jwt.util'
 
 export class AuthController {
 	constructor(
@@ -34,9 +33,9 @@ export class AuthController {
 		try {
 			const signedupUser = await this.authService.signup(req.body)
 			if (signedupUser) {
-				const signedVerifyToken = sign(
-					{ sub: signedupUser.id } as JwtPayload,
-					getEnv(ENV_ACCESS_TOKEN_SECRET) as string
+				const signedVerifyToken = getSignedJwtToken(
+					{ sub: signedupUser.id },
+					ENV_VERIFY_USER_SECRET
 				)
 				await this.mailService.sendVerifyUserMail(
 					signedupUser.id,

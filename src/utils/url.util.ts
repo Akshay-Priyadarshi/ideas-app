@@ -22,7 +22,6 @@ export const getReqBaseUrl = (req: Request): string => {
  * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi>
  */
 export const getBaseUrl = (req: Request): string => {
-	console.log(req.hostname)
 	const isDev = process.env.NODE_ENV === 'development'
 	const PORT = getEnv('PORT')
 	const hostname = isDev ? `${req.hostname}:${PORT}` : `${req.hostname}`

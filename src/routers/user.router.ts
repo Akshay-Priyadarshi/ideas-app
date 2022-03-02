@@ -5,8 +5,6 @@ import {
 	AuthenticationMiddleware,
 	SelfAndAdminAuthorizationMiddleware,
 } from '../middlewares/auth.middleware'
-import { ValidationMiddleware } from '../middlewares/validation.middleware'
-import { userGetByIdVS } from '../validation/user.validation'
 
 export const UserRouter = Router()
 
@@ -16,15 +14,10 @@ UserRouter.get('/count', userController.getUserCount)
 
 UserRouter.get('/', userController.getAllUsers)
 
-UserRouter.get(
-	'/:userId',
-	ValidationMiddleware(userGetByIdVS),
-	userController.getUserById
-)
+UserRouter.get('/:userId', userController.getUserById)
 
 UserRouter.put(
 	'/:userId',
-
 	AuthenticationMiddleware(),
 	SelfAndAdminAuthorizationMiddleware(),
 	userController.updateUser

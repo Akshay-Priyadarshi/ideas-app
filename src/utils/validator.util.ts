@@ -12,9 +12,9 @@ export const sanitisedData = (
 		cookies: matchedData(req, { ...options, locations: ['cookies'] }),
 		headers: matchedData(req, { ...options, locations: ['headers'] }),
 	}
-	req.body = sanitisedData.body
-	req.params = sanitisedData.params
-	req.query = sanitisedData.query
-	req.headers = sanitisedData.headers
-	req.cookies = sanitisedData.cookies
+	req.body = { ...req.body, ...sanitisedData.body }
+	req.query = { ...req.query, ...sanitisedData.query }
+	req.params = { ...req.params, ...sanitisedData.params }
+	req.headers = { ...req.headers, ...sanitisedData.headers }
+	req.cookies = { ...req.cookies, ...sanitisedData.cookies }
 }
