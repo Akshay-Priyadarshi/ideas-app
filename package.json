@@ -11,7 +11,7 @@
 		"watch": "yarn tsc -w -p tsconfig.json",
 		"clean": "rimraf dist",
 		"prebuild": "yarn clean",
-		"build": "tsc -p tsconfig.json"
+		"build": "yarn tsc -p tsconfig.json"
 	},
 	"dependencies": {
 		"@sendgrid/mail": "^7.6.0",
