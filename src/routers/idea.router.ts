@@ -1,22 +1,24 @@
-import { Router } from 'express'
-import { IdeaController } from '../controllers/idea.controller'
-import { AuthenticationMiddleware } from '../middlewares/auth.middleware'
+import { Router } from "express";
+import { IdeaController } from "../controllers/idea.controller";
+import { AuthenticationMiddleware } from "../middlewares/auth.middleware";
 
-export const IdeaRouter = Router()
-const ideaController = new IdeaController()
+export const IdeaRouter = Router();
+const ideaController = new IdeaController();
 
-IdeaRouter.get('/count', ideaController.getIdeaCount)
+IdeaRouter.get("/my/:userId", ideaController.getIdeaByUserId);
 
-IdeaRouter.get('/', AuthenticationMiddleware(), ideaController.getAllIdeas)
+IdeaRouter.get("/count", ideaController.getIdeaCount);
 
-IdeaRouter.get('/:ideaId', ideaController.getIdeaById)
+IdeaRouter.get("/", AuthenticationMiddleware(), ideaController.getAllIdeas);
 
-IdeaRouter.post('/', ideaController.createIdea)
+IdeaRouter.get("/:ideaId", ideaController.getIdeaById);
 
-IdeaRouter.put('/:ideaId', ideaController.updateIdea)
+IdeaRouter.post("/", ideaController.createIdea);
 
-IdeaRouter.delete('/:ideaId', ideaController.deleteIdea)
+IdeaRouter.put("/:ideaId", ideaController.updateIdea);
 
-IdeaRouter.post('/downvote', ideaController.downvoteIdea)
+IdeaRouter.delete("/:ideaId", ideaController.deleteIdea);
 
-IdeaRouter.post('/upvote', ideaController.upvoteIdea)
+IdeaRouter.post("/downvote", ideaController.downvoteIdea);
+
+IdeaRouter.post("/upvote", ideaController.upvoteIdea);
