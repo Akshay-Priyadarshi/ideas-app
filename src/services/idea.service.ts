@@ -1,6 +1,6 @@
 import { Downvote } from "../database/downvote.model";
 import { Idea } from "../database/idea.model";
-import { IUser } from "../database/user.model";
+import { IUser, User } from "../database/user.model";
 import { CreateDownvoteDto } from "../dtos/downvote.dto";
 import { CreateUpvoteDto } from "../dtos/upvote.dto";
 import {
@@ -69,26 +69,27 @@ export class IdeaService {
                 },
             },
         };
+        let aggregatedIdeas = null;
         if (p) {
             const skip = (p.page - 1) * p.limit;
             if (skip > p.count) {
                 return [];
             }
 
-            const ideas = await Idea.aggregate([
+            aggregatedIdeas = await Idea.aggregate([
                 { $skip: skip },
                 { $limit: p.limit },
                 addFieldIfIUpvoted,
                 addFieldIfIDownvoted,
             ]);
-            return ideas;
         } else {
-            const ideas = await Idea.aggregate([
+            aggregatedIdeas = await Idea.aggregate([
                 addFieldIfIUpvoted,
                 addFieldIfIDownvoted,
             ]);
-            return ideas;
         }
+        const ideas = await Idea.populate(aggregatedIdeas, { path: "ideator" });
+        return ideas;
     };
 
     /**
@@ -130,6 +131,14 @@ export class IdeaService {
     createIdea = async (
         createIdeaDto: CreateIdeaDto
     ): Promise<IdeaDatabaseResponse> => {
+        const ideator = await User.findOne({
+            _id: createIdeaDto.ideator,
+        });
+        if (!ideator) {
+            throw new AppErrorResponse({
+                message: `ideator doesn't exist`,
+            });
+        }
         const createdIdea = await Idea.create(createIdeaDto);
         const savedIdea = await createdIdea.save();
         return savedIdea;
