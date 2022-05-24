@@ -1,11 +1,17 @@
 import { model, Schema } from "mongoose";
-import { IDEA_MODEL_NAME, USER_MODEL_NAME } from "../utils/constant.util";
+import {
+    IDEA_MODEL_NAME,
+    TAG_MODEL_NAME,
+    TARGET_MODEL_NAME,
+    USER_MODEL_NAME,
+} from "../utils/constant.util";
 import { titleCase } from "../utils/string.util";
 
 export interface IIdea {
     title: string;
     desc: string;
-    solvedProblem: string;
+    tags: Schema.Types.ObjectId[];
+    targets: Schema.Types.ObjectId[];
     upvotes: number;
     downvotes: number;
     ideator: Schema.Types.ObjectId;
@@ -20,6 +26,7 @@ const ideaSchema = new Schema<IIdea>(
             lowercase: true,
             select: true,
             get: titleCase,
+            minlength: 3,
             maxlength: 100,
         },
         upvotes: { type: Number, select: true, default: 0 },
@@ -31,15 +38,20 @@ const ideaSchema = new Schema<IIdea>(
             get: titleCase,
             trim: true,
             select: true,
+            minlength: 100,
             maxlength: 1000,
         },
-        solvedProblem: {
-            type: String,
-            trim: true,
-            lowercase: true,
-            get: titleCase,
+        tags: {
+            type: [Schema.Types.ObjectId],
+            ref: TAG_MODEL_NAME,
             select: true,
-            maxlength: 1000,
+            default: [],
+        },
+        targets: {
+            type: [Schema.Types.ObjectId],
+            ref: TARGET_MODEL_NAME,
+            select: true,
+            default: [],
         },
         ideator: {
             type: Schema.Types.ObjectId,
