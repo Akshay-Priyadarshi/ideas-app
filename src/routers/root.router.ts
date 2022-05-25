@@ -1,20 +1,26 @@
-import { Router } from 'express'
-import { AuthRouter } from './auth.router'
-import { IdeaRouter } from './idea.router'
-import { UserRouter } from './user.router'
+import { Router } from "express";
+import { AuthRouter } from "./auth.router";
+import { IdeaRouter } from "./idea.router";
+import { TagRouter } from "./tag.router";
+import { TargetRouter } from "./target.router";
+import { UserRouter } from "./user.router";
 
-export const RootRouter = Router()
+export const RootRouter = Router();
 
-RootRouter.get('/', (req, res) => {
-	res.status(200).send('✔️ Server is running fine')
-})
+RootRouter.get("/", (req, res) => {
+    res.status(200).send("✔️ Server is running fine");
+});
 
-RootRouter.use('/users', UserRouter)
+RootRouter.use("/users", UserRouter);
 
-RootRouter.use('/ideas', IdeaRouter)
+RootRouter.use("/ideas", IdeaRouter);
 
-RootRouter.use('/auth', AuthRouter)
+RootRouter.use("/tags", TagRouter);
 
-RootRouter.get('/*', (req, res) => {
-	res.send('Undefined API')
-})
+RootRouter.use("/targets", TargetRouter);
+
+RootRouter.use("/auth", AuthRouter);
+
+RootRouter.get("/*", (req, res) => {
+    res.send("Undefined API");
+});

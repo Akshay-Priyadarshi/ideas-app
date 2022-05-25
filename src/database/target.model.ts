@@ -12,11 +12,13 @@ const targetSchema = new Schema<ITarget>(
             trim: true,
             lowerCase: true,
             select: true,
+            unique: true,
         },
     },
     {
         toJSON: { getters: true, virtuals: true, aliases: true },
         toObject: { getters: true, virtuals: true, aliases: true },
+        id: false,
     }
 );
 
