@@ -38,6 +38,27 @@ export class TagController {
         }
     };
 
+    getFilteredTags = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const filteredTags = await this.tagService.getFilteredTags(
+                req.query.name as string
+            );
+            const appResponse = new AppResponse({
+                reqPath: req.originalUrl,
+                success: new AppSuccessResponse({
+                    data: filteredTags,
+                }),
+            });
+            res.json(appResponse);
+        } catch (err) {
+            next(err);
+        }
+    };
+
     getTagById = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const idea = await this.tagService.getTagById(

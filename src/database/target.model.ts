@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { TARGET_MODEL_NAME } from "../utils/constant.util";
+import { titleCase } from "../utils/string.util";
 
 export interface ITarget {
     name: string;
@@ -13,6 +14,7 @@ const targetSchema = new Schema<ITarget>(
             lowerCase: true,
             select: true,
             unique: true,
+            get: titleCase,
         },
     },
     {

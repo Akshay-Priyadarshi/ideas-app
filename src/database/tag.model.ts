@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { TAG_MODEL_NAME } from "../utils/constant.util";
+import { titleCase } from "../utils/string.util";
 
 export interface ITag {
     name: string;
@@ -13,6 +14,7 @@ const tagSchema = new Schema<ITag>(
             lowerCase: true,
             select: true,
             unique: true,
+            get: titleCase,
         },
     },
     {

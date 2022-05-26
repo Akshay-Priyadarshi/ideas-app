@@ -11,14 +11,34 @@ IdeaRouter.get("/count", ideaController.getIdeaCount);
 
 IdeaRouter.get("/", AuthenticationMiddleware(), ideaController.getAllIdeas);
 
-IdeaRouter.get("/:ideaId", ideaController.getIdeaById);
+IdeaRouter.get(
+    "/:ideaId",
+    AuthenticationMiddleware(),
+    ideaController.getIdeaById
+);
 
-IdeaRouter.post("/", ideaController.createIdea);
+IdeaRouter.post("/", AuthenticationMiddleware(), ideaController.createIdea);
 
-IdeaRouter.put("/:ideaId", ideaController.updateIdea);
+IdeaRouter.put(
+    "/:ideaId",
+    AuthenticationMiddleware(),
+    ideaController.updateIdea
+);
 
-IdeaRouter.delete("/:ideaId", ideaController.deleteIdea);
+IdeaRouter.delete(
+    "/:ideaId",
+    AuthenticationMiddleware(),
+    ideaController.deleteIdea
+);
 
-IdeaRouter.post("/downvote", ideaController.downvoteIdea);
+IdeaRouter.post(
+    "/downvote",
+    AuthenticationMiddleware(),
+    ideaController.downvoteIdea
+);
 
-IdeaRouter.post("/upvote", ideaController.upvoteIdea);
+IdeaRouter.post(
+    "/upvote",
+    AuthenticationMiddleware(),
+    ideaController.upvoteIdea
+);

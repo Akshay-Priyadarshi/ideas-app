@@ -1,6 +1,6 @@
 import { Downvote } from "../database/downvote.model";
 import { Idea } from "../database/idea.model";
-import { IUser, User } from "../database/user.model";
+import { User } from "../database/user.model";
 import { CreateDownvoteDto } from "../dtos/downvote.dto";
 import { CreateUpvoteDto } from "../dtos/upvote.dto";
 import {
@@ -95,23 +95,57 @@ export class IdeaService {
     /**
      * @name getIdeaById
      * @param {string} id Idea id
-     * @param {boolean} complete Complete or not
+     * @param {UserDatabaseResponse} loggedInUser Logged in user
      * @returns {Promise<IdeaDatabaseResponse | null>} Returns Idea corresponding to the provided id
      * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi>
      */
     getIdeaById = async (
         id: string,
-        complete?: boolean
+        loggedInUser: UserDatabaseResponse
     ): Promise<IdeaDatabaseResponse | null> => {
-        let idea;
-        if (complete == true) {
-            idea = await Idea.findOne({ _id: id }).populate<{ ideator: IUser }>(
-                ["ideator"]
-            );
-        } else {
-            idea = await Idea.findOne({ _id: id });
-        }
-        return idea;
+        const upvotedIdeasId = await Upvote.find({
+            upvoter: loggedInUser._id,
+        }).transform((docs) => {
+            const ids = docs.map((doc) => {
+                return doc.idea;
+            });
+            return ids;
+        });
+        const downvotedIdeasId = await Downvote.find({
+            downvoter: loggedInUser._id,
+        }).transform((docs) => {
+            const ids = docs.map((doc) => {
+                return doc.idea;
+            });
+            return ids;
+        });
+        const addFieldIfIUpvoted = {
+            $addFields: {
+                ifIUpvoted: {
+                    $in: ["$_id", upvotedIdeasId],
+                },
+            },
+        };
+        const addFieldIfIDownvoted = {
+            $addFields: {
+                ifIDownvoted: {
+                    $in: ["$_id", downvotedIdeasId],
+                },
+            },
+        };
+        const aggregatedIdeas = await Idea.aggregate([
+            {
+                $match: {
+                    $expr: {
+                        $eq: ["$_id", new mongoose.Types.ObjectId(id)],
+                    },
+                },
+            },
+            addFieldIfIUpvoted,
+            addFieldIfIDownvoted,
+        ]);
+        const ideas = await Idea.populate(aggregatedIdeas, { path: "ideator" });
+        return ideas[0] as IdeaDatabaseResponse;
     };
 
     getIdeaByUserId = async (
@@ -129,8 +163,9 @@ export class IdeaService {
      * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi>
      */
     createIdea = async (
-        createIdeaDto: CreateIdeaDto
-    ): Promise<IdeaDatabaseResponse> => {
+        createIdeaDto: CreateIdeaDto,
+        loggedInUser: UserDatabaseResponse
+    ): Promise<IdeaDatabaseResponse | null> => {
         const ideator = await User.findOne({
             _id: createIdeaDto.ideator,
         });
@@ -141,7 +176,8 @@ export class IdeaService {
         }
         const createdIdea = await Idea.create(createIdeaDto);
         const savedIdea = await createdIdea.save();
-        return savedIdea;
+        const idea = await this.getIdeaById(savedIdea.id, loggedInUser);
+        return idea as IdeaDatabaseResponse;
     };
 
     /**
@@ -154,11 +190,12 @@ export class IdeaService {
      */
     updateIdea = async (
         id: string,
-        updateIdeaDto: UpdateIdeaDto
+        updateIdeaDto: UpdateIdeaDto,
+        loggedInUser: UserDatabaseResponse
     ): Promise<IdeaDatabaseResponse | null | undefined> => {
         const updateResult = await Idea.updateOne({ _id: id }, updateIdeaDto);
         if (updateResult.modifiedCount > 0) {
-            return this.getIdeaById(id);
+            return await this.getIdeaById(id, loggedInUser);
         }
     };
 
@@ -170,9 +207,10 @@ export class IdeaService {
      * @author Akshay Priyadarshi <https://github.com/Akshay-Priyadarshi>
      */
     deleteIdea = async (
-        id: string
+        id: string,
+        loggedInUser: UserDatabaseResponse
     ): Promise<IdeaDatabaseResponse | null | undefined> => {
-        const toBeDeleted = await this.getIdeaById(id);
+        const toBeDeleted = await this.getIdeaById(id, loggedInUser);
         if (toBeDeleted != null) {
             const deleteResult = await Idea.deleteOne({ _id: id });
             if (deleteResult.deletedCount > 0) {
@@ -189,7 +227,7 @@ export class IdeaService {
             downvoter: createDownvoteDto.userId,
         });
         let downvoted = false;
-        const idea = await this.getIdeaById(createDownvoteDto.ideaId);
+        const idea = await Idea.findOne({ _id: createDownvoteDto.ideaId });
         const similarUpvote = await Upvote.findOne({
             idea: createDownvoteDto.ideaId,
             upvoter: createDownvoteDto.userId,
@@ -228,7 +266,7 @@ export class IdeaService {
             upvoter: createUpvoteDto.userId,
         });
         let upvoted = false;
-        const idea = await this.getIdeaById(createUpvoteDto.ideaId);
+        const idea = await Idea.findOne({ _id: createUpvoteDto.ideaId });
         const similarUpvote = await Upvote.findOne({
             idea: createUpvoteDto.ideaId,
             upvoter: createUpvoteDto.userId,

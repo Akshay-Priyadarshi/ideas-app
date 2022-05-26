@@ -28,6 +28,7 @@ export const USER_MODEL_NAME = "User";
 export const IDEA_MODEL_NAME = "Idea";
 export const UPVOTE_MODEL_NAME = "Upvote";
 export const DOWNVOTE_MODEL_NAME = "Downvote";
+export const FAVOURITE_MODEL_NAME = "Favourite";
 export const COMMENT_MODEL_NAME = "Comment";
 export const TARGET_MODEL_NAME = "Target";
 export const TAG_MODEL_NAME = "Tag";

@@ -35,6 +35,14 @@ export class TagService {
         return tags;
     };
 
+    getFilteredTags = async (
+        name: string
+    ): Promise<TagDatabaseResponse[] | undefined> => {
+        const tags = await Tag.find();
+        const filteredTags = tags.filter((tag) => tag.name.includes(name));
+        return filteredTags;
+    };
+
     /**
      * @name getTagById
      * @param {string} id Tag id
@@ -87,14 +95,11 @@ export class TagService {
         id: string,
         updateTagDto: UpdateTagDto
     ): Promise<TagDatabaseResponse | null | undefined> => {
-        console.log(updateTagDto);
         const updateResult = await Tag.updateOne({ _id: id }, updateTagDto, {
             runValidators: true,
         });
-        console.log(updateResult);
         if (updateResult.modifiedCount > 0) {
             const updatedTag = await this.getTagById(id);
-            console.log(updatedTag);
             return updatedTag;
         }
     };

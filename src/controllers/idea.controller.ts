@@ -47,7 +47,7 @@ export class IdeaController {
         try {
             const idea = await this.ideaService.getIdeaById(
                 req.params.ideaId,
-                true
+                req.user as UserDatabaseResponse
             );
             const appResponse = new AppResponse({
                 reqPath: req.originalUrl,
@@ -84,7 +84,10 @@ export class IdeaController {
 
     createIdea = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const idea = await this.ideaService.createIdea(req.body);
+            const idea = await this.ideaService.createIdea(
+                req.body,
+                req.user as UserDatabaseResponse
+            );
             const appResponse = new AppResponse({
                 reqPath: req.originalUrl,
                 success: new AppSuccessResponse({
@@ -102,7 +105,8 @@ export class IdeaController {
         try {
             const idea = await this.ideaService.updateIdea(
                 req.params.ideaId,
-                req.body
+                req.body,
+                req.user as UserDatabaseResponse
             );
             const appResponse = new AppResponse({
                 reqPath: req.originalUrl,
@@ -119,7 +123,10 @@ export class IdeaController {
 
     deleteIdea = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const idea = await this.ideaService.deleteIdea(req.params.ideaId);
+            const idea = await this.ideaService.deleteIdea(
+                req.params.ideaId,
+                req.user as UserDatabaseResponse
+            );
             const appResponse = new AppResponse({
                 reqPath: req.originalUrl,
                 success: new AppSuccessResponse({

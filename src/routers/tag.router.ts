@@ -8,6 +8,8 @@ TagRouter.get("/count", tagController.getTagCount);
 
 TagRouter.get("/", tagController.getAllTags);
 
+TagRouter.get("/filter", tagController.getFilteredTags);
+
 TagRouter.get("/:tagId", tagController.getTagById);
 
 TagRouter.post("/", tagController.createTag);
