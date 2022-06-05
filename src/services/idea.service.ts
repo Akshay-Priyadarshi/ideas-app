@@ -14,7 +14,6 @@ import { Upvote } from "../database/upvote.model";
 import {
     AppErrorResponse,
     AuthorizationError,
-    ClientError,
 } from "../responses/error.response";
 import { UserDatabaseResponse } from "../dtos/user.dto";
 
