@@ -10,6 +10,7 @@ import { titleCase } from "../utils/string.util";
 export interface IIdea {
     title: string;
     desc: string;
+    solvedProblem: string;
     tags: Schema.Types.ObjectId[];
     targets: Schema.Types.ObjectId[];
     upvotes: number;
@@ -34,6 +35,16 @@ const ideaSchema = new Schema<IIdea>(
         desc: {
             type: String,
             required: true,
+            lowercase: true,
+            get: titleCase,
+            trim: true,
+            select: true,
+            minlength: 100,
+            maxlength: 1000,
+        },
+        solvedProblem: {
+            type: String,
+            required: false,
             lowercase: true,
             get: titleCase,
             trim: true,
