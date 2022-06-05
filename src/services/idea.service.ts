@@ -11,7 +11,11 @@ import {
 import mongoose, { ClientSession } from "mongoose";
 import { PaginationDto } from "../dtos/pagination.dto";
 import { Upvote } from "../database/upvote.model";
-import { AppErrorResponse } from "../responses/error.response";
+import {
+    AppErrorResponse,
+    AuthorizationError,
+    ClientError,
+} from "../responses/error.response";
 import { UserDatabaseResponse } from "../dtos/user.dto";
 
 export class IdeaService {
@@ -193,6 +197,12 @@ export class IdeaService {
         updateIdeaDto: UpdateIdeaDto,
         loggedInUser: UserDatabaseResponse
     ): Promise<IdeaDatabaseResponse | null | undefined> => {
+        const ideaToBeUpdated = await Idea.findOne({ _id: id });
+        if (ideaToBeUpdated?.ideator !== loggedInUser.id) {
+            throw new AuthorizationError({
+                message: "you aren't authorized to perform this operation",
+            });
+        }
         const updateResult = await Idea.updateOne({ _id: id }, updateIdeaDto);
         if (updateResult.modifiedCount > 0) {
             return await this.getIdeaById(id, loggedInUser);
