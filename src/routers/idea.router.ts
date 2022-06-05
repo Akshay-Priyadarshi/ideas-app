@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { IdeaController } from "../controllers/idea.controller";
 import { AuthenticationMiddleware } from "../middlewares/auth.middleware";
+import { ValidationMiddleware } from "../middlewares/validation.middleware";
+import { createIdeaVS } from "../validation/idea.validation";
 
 export const IdeaRouter = Router();
 const ideaController = new IdeaController();
@@ -17,7 +19,12 @@ IdeaRouter.get(
     ideaController.getIdeaById
 );
 
-IdeaRouter.post("/", AuthenticationMiddleware(), ideaController.createIdea);
+IdeaRouter.post(
+    "/",
+    AuthenticationMiddleware(),
+    ValidationMiddleware(createIdeaVS),
+    ideaController.createIdea
+);
 
 IdeaRouter.put(
     "/:ideaId",
